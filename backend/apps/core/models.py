@@ -1,5 +1,5 @@
 from django.db import models
-from utils import sync_game_from_steam
+from .utils.sync_game_from_steam import sync_game_from_steam
 
 # Core data models for the ConfigVault app.
 #
@@ -84,13 +84,13 @@ class Preset(models.Model):
         # Enforce uniqueness of presets per game and tier. NOTE: the tuple
         # references the database field names; ensure these match actual
         # field names (`tier` is the field name used above).
-        unique_together = ("game", "tier_type")
+        unique_together = ("game", "tier")
 
 
 class Setting(models.Model):
     # Impact levels for a particular setting. Stored as strings to make
     # them human-readable when inspecting DB rows.
-    class Impact(models.IntegerChoices):
+    class Impact(models.TextChoices):
         LOW = "Low", "Low"
         MEDIUM = "Medium", "Medium"
         HIGH = "High", "High"

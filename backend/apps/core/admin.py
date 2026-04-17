@@ -16,7 +16,7 @@ class SettingInLine(admin.TabularInline):
 class PresetAdmin(admin.ModelAdmin):
     # Columns shown in the Preset changelist. Adjust the tuple to show
     # the most relevant fields for quickly scanning presets.
-    list_display = ("game", "tier_type")
+    list_display = ("game", "tier")
 
     # Include settings inline when editing a preset so administrators can
     # manage both Preset and its Settings on the same page.
@@ -30,7 +30,7 @@ class PresetAdmin(admin.ModelAdmin):
 class GameAdmin(admin.ModelAdmin):
     # Changelist columns for Game objects; include SteamID and developer
     # to make identification straightforward in the admin list view.
-    list_display = ("title", "steam_appid", "developer", "release_date")
+    list_display = ("title", "steam_appid", "engine", "developer", "release_date")
 
     # Allow quick searching by title, developer, or Steam AppID.
     search_fields = ["title", "developer", "steam_appid"]
