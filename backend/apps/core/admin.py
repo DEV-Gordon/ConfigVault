@@ -16,7 +16,7 @@ class SettingInLine(admin.TabularInline):
 class PresetAdmin(admin.ModelAdmin):
     # Columns shown in the Preset changelist. Adjust the tuple to show
     # the most relevant fields for quickly scanning presets.
-    list_display = ("game", "tier")
+    list_display = ("game", "tier_label")
 
     # Include settings inline when editing a preset so administrators can
     # manage both Preset and its Settings on the same page.
@@ -25,6 +25,11 @@ class PresetAdmin(admin.ModelAdmin):
     # Allow searching by the related game's title to quickly find presets
     # for a particular game.
     search_fields = ["game__title"]
+
+    def tier_label(self, obj):
+        return obj.get_tier_display()
+
+    tier_label.short_description = "Tier"
 
 
 class GameAdmin(admin.ModelAdmin):

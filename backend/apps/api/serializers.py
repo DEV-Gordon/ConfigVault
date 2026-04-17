@@ -11,7 +11,7 @@ class SettingSerializer(serializers.ModelSerializer):
     # fields so API clients can read setting details attached to a preset.
     class Meta:
         model = Setting
-        fields = ["id", "value", "impact"]
+        fields = ["id", "key", "value", "impact"]
 
 
 class PresetSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class PresetSerializer(serializers.ModelSerializer):
     # the model's field names (e.g., `tier` / `TierType`).
     class Meta:
         model = Preset
-        fields = ["tier_Type", "notes", "config_file", "settings"]
+        fields = ["tier", "notes", "config_file", "settings"]
 
 
 class GameDetailSerializer(serializers.ModelSerializer):
@@ -49,5 +49,6 @@ class GameDetailSerializer(serializers.ModelSerializer):
             "url_header",
             "url_capsule",
             "url_background",
+            "requirements",
             "presets",
         ]
