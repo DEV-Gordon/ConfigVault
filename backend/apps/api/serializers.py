@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from apps.core.models import Game, Preset, Setting, Engine
+from apps.core.models import Game, Preset, Setting
+
+# Note: `Engine` is not imported here because it is represented as a
+# nested object by `GameDetailSerializer.get_engine()`; keeping the
+# serializer focused on presentation avoids importing models unused
+# elsewhere in this module.
 
 # Serializers for the API layer.
 # These convert Django model instances into JSON-friendly Python types

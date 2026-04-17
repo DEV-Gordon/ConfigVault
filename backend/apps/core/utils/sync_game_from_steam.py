@@ -1,8 +1,20 @@
+"""Fetch and normalize Steam Store metadata for a given appid.
+
+This module exposes `sync_game_from_steam(steam_appid)` which queries
+the Steam Store API and returns a compact dictionary of fields used by
+the `Game` model. The function intentionally returns only a small
+subset of fields to keep the model layer decoupled from the full
+Steam payload.
+
+Notes:
+- This function performs network I/O and should be called from a
+    background task for production workloads.
+- It raises `ValidationError` for non-200 responses or missing data so
+    callers can handle failures explicitly.
+"""
+
 import requests
 from django.core.exceptions import ValidationError
-
-# This utility fetches metadata for a Steam app using the Steam Store API
-# and normalizes a small subset of fields for use elsewhere in the project.
 
 
 def sync_game_from_steam(steam_appid):

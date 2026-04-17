@@ -40,7 +40,7 @@ class PresetAdmin(admin.ModelAdmin):
         return obj.get_tier_display()
 
     tier_label.short_description = "Tier"
-    list_filter = ("deck_verification","tier")
+    list_filter = ("game", "deck_verification","tier")
     # Allow quick filtering of presets by their Steam Deck verification
     # status in the changelist sidebar.
 
@@ -48,7 +48,7 @@ class PresetAdmin(admin.ModelAdmin):
 class GameAdmin(admin.ModelAdmin):
     # Changelist columns for Game objects; include SteamID and developer
     # to make identification straightforward in the admin list view.
-    list_display = ("title", "steam_appid", "engine", "api_target", "developer", "release_date", "view_api")
+    list_display = ("title", "steam_appid", "engine", "api_target", "developer", "release_date", "view_api", "view_presets")
 
     # Allow quick searching by title, developer, or Steam AppID.
     search_fields = ["title", "developer", "steam_appid"]
@@ -57,12 +57,37 @@ class GameAdmin(admin.ModelAdmin):
 
     @admin.display(description="API")
     def view_api(self, obj):
+        """Render a small admin button that opens the game's API detail.
+
+        Use `reverse('game-detail')` to build the URL; if reversing
+        fails (for example, if URL names change), fall back to a
+        constructed path. The link opens in a new tab to avoid leaving
+        the admin list view.
+        """
         try:
             url = reverse("game-detail", kwargs={"steam_appid": obj.steam_appid})
         except Exception:
             # Fallback to a constructed path if reverse fails for any reason
             url = f"/api/games/{obj.steam_appid}/"
         return format_html('<a class="button" href="{}" target="_blank">View API</a>', url)
+
+    @admin.display(description="Presets")
+    def view_presets(self, obj):
+        """Render a button linking to the Preset changelist filtered
+        to this `Game` instance.
+
+        This uses the admin changelist URL name and adds a GET filter
+        parameter `game__id__exact=<id>` so the admin shows only presets
+        for the selected game. A fallback path is provided if URL
+        reversing fails.
+        """
+        try:
+            changelist = reverse("admin:configvault_preset_changelist")
+            url = f"{changelist}?game__id__exact={obj.id}"
+        except Exception:
+            # Fallback if reverse fails for any reason
+            url = f"/admin/configvault/preset/?game__id__exact={obj.id}"
+        return format_html('<a class="button" href="{}" target="_blank">Presets</a>', url)
 
 # Simple admin for the engine registry so administrators can manage
 # known engines and their versions used by multiple games.
@@ -75,3 +100,8 @@ class EngineAdmin(admin.ModelAdmin):
 admin.site.register(Game, GameAdmin)
 admin.site.register(Preset, PresetAdmin)
 admin.site.register(Engine, EngineAdmin)
+
+# Customize the admin site header and titles for a more branded experience.
+admin.site.site_header = "ConfigVault Admin"
+admin.site.site_title = "ConfigVault Admin Portal"
+admin.site.index_title = "Welcome to ConfigVault Admin"

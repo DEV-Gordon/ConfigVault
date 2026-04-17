@@ -2,6 +2,14 @@ from django.db import models
 from .utils.sync_game_from_steam import sync_game_from_steam
 
 
+# Core models for ConfigVault: Engine registry and Game metadata.
+#
+# - `Engine` centralizes engine names/versions to avoid free-text
+#   inconsistencies across `Game` records. Consider normalizing values
+#   (trim/lowercase) before creating `Engine` rows to avoid duplicates.
+# - `ApiTarget` enumerates renderer/API tokens used in Steam metadata.
+
+
 # Registry for known game engines. Storing engines as a model avoids
 # inconsistent free-text engine names and allows reusing engine entries
 # across multiple games.
@@ -31,6 +39,12 @@ class ApiTarget(models.TextChoices):
     METAL = "MTL", "Metal"
     WEBGL = "WEBGL", "WebGL"
     OTHER = "OTHER", "Other"
+
+# NOTE: `Game.save()` currently calls `sync_game_from_steam()` which
+# performs network I/O. This keeps records fresh but couples saves to
+# external availability. For production or bulk operations consider
+# moving steam-sync to an asynchronous task queue (Celery/RQ) or
+# providing an explicit flag to skip the network call during save.
 
 # Core data models for the ConfigVault app.
 #

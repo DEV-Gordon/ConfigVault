@@ -29,6 +29,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Successfully synced {appid}"))
         except Game.DoesNotExist:
             # Inform the user that no Game exists with the given AppID.
+            # Consider adding a `--create` flag to allow creating and
+            # syncing a new `Game` if desired. For safety this command
+            # currently refuses to create records implicitly.
             self.stderr.write(self.style.ERROR("Game not found."))
         except Exception as exc:
             # Catch-all: surface any unexpected exception message to stderr.
