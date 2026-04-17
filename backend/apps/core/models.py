@@ -65,10 +65,25 @@ class Game(models.Model):
 
 class Preset(models.Model):
     # Define predictable preset tiers using an IntegerChoices enum.
+    #
+    # NOTE: `STEAM_DECK` was added to represent presets tailored for the
+    # Steam Deck platform. Keep numeric values stable to avoid migration
+    # surprises when generating choices-based fields.
     class TierType(models.IntegerChoices):
         BRONZE = 1, "Bronze"
         SILVER = 2, "Silver"
         GOLD = 3, "Gold"
+        STEAM_DECK = 4, "Steam Deck"
+    
+    # Result of an automated or manual Steam Deck compatibility check.
+    # Use `UNKNOWN` as a safe default so presets are valid even before any
+    # verification process has run.
+    class DeckVerification(models.TextChoices):
+        UNKNOWN = "Unknown", "Unknown"
+        VERIFIED = "Verified", "Verified"
+        PLAYABLE = "Playable", "Playable"
+        UNVERIFIED = "Unverified", "Unverified"
+        UNPLAYABLE = "Unplayable", "Unplayable"
 
     # The game this preset belongs to.
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="presets")
@@ -85,6 +100,19 @@ class Preset(models.Model):
         # references the database field names; ensure these match actual
         # field names (`tier` is the field name used above).
         unique_together = ("game", "tier")
+    
+    # Deck verification status for this preset. Stored as a short string
+    # and constrained to the `DeckVerification` choices. Defaults to
+    # `UNKNOWN` to avoid mandatory fields on creation.
+    deck_verification = models.CharField(
+        max_length=32,
+        choices=DeckVerification.choices,
+        default=DeckVerification.UNKNOWN,
+    )
+
+    def __str__(self):
+        # Human-readable representation includes the game title and tier label.
+        return f"{self.game.title} - {self.get_tier_display()}"
 
 
 class Setting(models.Model):

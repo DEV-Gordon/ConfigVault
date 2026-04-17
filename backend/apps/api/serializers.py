@@ -19,13 +19,24 @@ class PresetSerializer(serializers.ModelSerializer):
     # multiple Setting instances are expected and `read_only=True` prevents
     # nested creation via this serializer.
     settings = SettingSerializer(many=True, read_only=True)
+    # Read-only human-friendly label for the `tier` choices (e.g. "Bronze").
+    # This is useful for clients that prefer readable strings instead of
+    # numeric choice values.
+    tier_label = serializers.SerializerMethodField(read_only=True)
 
     # Serializer for `Preset`. Fields include tier, notes, uploaded config
     # file, and the nested settings. Note: ensure field names here match
     # the model's field names (e.g., `tier` / `TierType`).
     class Meta:
         model = Preset
-        fields = ["tier", "notes", "config_file", "settings"]
+        # Include `deck_verification` so clients can see Steam Deck
+        # compatibility status for each preset.
+        fields = ["tier", "tier_label", "deck_verification", "notes", "config_file", "settings"]
+
+    def get_tier_label(self, obj):
+        # Delegate to the model helper so the serializer output matches
+        # the admin/readable representation of the choice field.
+        return obj.get_tier_display()
 
 
 class GameDetailSerializer(serializers.ModelSerializer):
