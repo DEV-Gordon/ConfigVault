@@ -1,9 +1,11 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 
 # Django admin registrations for core app models.
 # This file configures how `Game`, `Preset`, and `Setting` appear and
 # behave inside the Django admin UI.
-from .models import Game, Preset, Setting
+from .models import Game, Preset, Setting, Engine
 
 
 class SettingInLine(admin.TabularInline):
@@ -46,15 +48,30 @@ class PresetAdmin(admin.ModelAdmin):
 class GameAdmin(admin.ModelAdmin):
     # Changelist columns for Game objects; include SteamID and developer
     # to make identification straightforward in the admin list view.
-    list_display = ("title", "steam_appid", "engine", "api_target", "developer", "release_date")
+    list_display = ("title", "steam_appid", "engine", "api_target", "developer", "release_date", "view_api")
 
     # Allow quick searching by title, developer, or Steam AppID.
     search_fields = ["title", "developer", "steam_appid"]
 
     list_filter = ( "developer", "engine", "api_target")
 
+    @admin.display(description="API")
+    def view_api(self, obj):
+        try:
+            url = reverse("game-detail", kwargs={"steam_appid": obj.steam_appid})
+        except Exception:
+            # Fallback to a constructed path if reverse fails for any reason
+            url = f"/api/games/{obj.steam_appid}/"
+        return format_html('<a class="button" href="{}" target="_blank">View API</a>', url)
+
+# Simple admin for the engine registry so administrators can manage
+# known engines and their versions used by multiple games.
+class EngineAdmin(admin.ModelAdmin):
+    list_display = ("name", "version")
+    search_fields = ("name",)
 
 # Register the models with their corresponding ModelAdmin classes so the
 # Django admin site uses the custom configurations above.
 admin.site.register(Game, GameAdmin)
 admin.site.register(Preset, PresetAdmin)
+admin.site.register(Engine, EngineAdmin)

@@ -1,6 +1,37 @@
 from django.db import models
 from .utils.sync_game_from_steam import sync_game_from_steam
 
+
+# Registry for known game engines. Storing engines as a model avoids
+# inconsistent free-text engine names and allows reusing engine entries
+# across multiple games.
+class Engine(models.Model):
+    name = models.CharField(max_length=128)
+    version = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        unique_together = ("name", "version")
+
+    def __str__(self):
+        return f"{self.name} {self.version}" if self.version else self.name
+
+
+# Supported API/renderer targets. Stored on `Game.api_target` as a short
+# string token for compact storage and easy client consumption.
+class ApiTarget(models.TextChoices):
+    DIRECTX7 = "DX7", "DirectX 7"
+    DIRECTX8 = "DX8", "DirectX 8"
+    DIRECTX9 = "DX9", "DirectX 9"
+    DIRECTX10 = "DX10", "DirectX 10"
+    DIRECTX11 = "DX11", "DirectX 11"
+    DIRECTX12 = "DX12", "DirectX 12"
+    OPENGL = "GL", "OpenGL"
+    OPENGL_ES = "GLES", "OpenGL ES"
+    VULKAN = "VK", "Vulkan"
+    METAL = "MTL", "Metal"
+    WEBGL = "WEBGL", "WebGL"
+    OTHER = "OTHER", "Other"
+
 # Core data models for the ConfigVault app.
 #
 # - `Game`: Represents a Steam game identified by its numeric `steam_appid`.
@@ -15,10 +46,20 @@ class Game(models.Model):
     steam_appid = models.PositiveIntegerField(unique=True)
     
     # User-provided fields: editable by the user in the UI or admin.
-    # These values are not fetched from Steam and should be entered
-    # manually (for example, engine name or custom API target).
-    engine = models.CharField(max_length=32, blank=True)
-    api_target = models.CharField(max_length=32, blank=True)
+    # `engine` is a ForeignKey to the `Engine` registry model. It is
+    # nullable to preserve backwards compatibility with records that
+    # may not have an associated Engine object yet.
+    engine = models.ForeignKey(
+        "Engine",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="games",
+    )
+
+    # `api_target` is restricted to a set of known renderer/API targets
+    # using the `ApiTarget` TextChoices above. Store the token (e.g. "DX9").
+    api_target = models.CharField(max_length=32, blank=True, choices=ApiTarget.choices)
 
     # Optional metadata fields that may be populated from the Steam API.
     title = models.CharField(max_length=128, blank=True)

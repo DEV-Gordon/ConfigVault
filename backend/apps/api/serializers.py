@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.core.models import Game, Preset, Setting
+from apps.core.models import Game, Preset, Setting, Engine
 
 # Serializers for the API layer.
 # These convert Django model instances into JSON-friendly Python types
@@ -47,6 +47,9 @@ class GameDetailSerializer(serializers.ModelSerializer):
     # Serializer exposing important game metadata returned by the Steam
     # sync process and user-provided fields such as `engine` and
     # `api_target`.
+    # Represent the engine as a nested object for clarity and reuse.
+    engine = serializers.SerializerMethodField()
+
     class Meta:
         model = Game
         fields = [
@@ -63,3 +66,10 @@ class GameDetailSerializer(serializers.ModelSerializer):
             "requirements",
             "presets",
         ]
+
+    def get_engine(self, obj):
+        # If the engine FK is set, return its id, name and version; otherwise
+        # return None so clients can fall back to free-text values if needed.
+        if obj.engine is None:
+            return None
+        return {"id": obj.engine.id, "name": obj.engine.name, "version": obj.engine.version}
