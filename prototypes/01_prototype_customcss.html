@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConfigVault - Global Database</title>
+<style>
+  @font-face {
+    font-family: 'Motiva Sans';
+    font-weight: 300;
+    src: local('Motiva Sans Light'), local('MotivaSans-Light');
+  }
+  @font-face {
+    font-family: 'Motiva Sans';
+    font-weight: normal;
+    src: local('Motiva Sans'), local('MotivaSans-Regular');
+  }
+  @font-face {
+    font-family: 'Motiva Sans';
+    font-weight: 500;
+    src: local('Motiva Sans Medium'), local('MotivaSans-Medium');
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Motiva Sans", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #c7d5e0;
+    background: #171a21;
+  }
+  
+  :root {
+    --steam-global: #171a21;
+    --steam-bg: #101216;
+    --steam-accent: #66c0f4;
+    --steam-accent-hover: #67c1f5;
+    --border-radius-lg: 4px;
+  }
+
+  .cv-app {
+    background: radial-gradient(circle at top, #1b2838 0%, #101216 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* TOPBAR & SEARCH (CENTERED) */
+  .cv-topbar {
+    background: var(--steam-global);
+    display: flex;
+    justify-content: center; /* Centra el contenedor interno en pantallas grandes */
+    width: 100%;
+    height: 70px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    z-index: 10;
+  }
+
+  .cv-topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px; /* Mismo ancho máximo que el contenido principal (.cv-main) */
+    padding: 0 20px;
+  }
+  
+  .cv-logo {
+    font-size: 24px;
+    font-weight: 500;
+    color: #e5e4dc;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .cv-logo span { font-weight: 300; color: var(--steam-accent); }
+  
+  .cv-nav { 
+    display: flex; 
+    gap: 8px; 
+    height: 100%; 
+    align-items: center; 
+    justify-content: center; /* Centra los botones del menú */
+    flex: 1; 
+  }
+  .cv-nav button {
+    background: none; border: none; color: #b8b6b4; font-size: 15px;
+    padding: 6px 12px; cursor: pointer; text-transform: uppercase;
+    font-weight: 500; transition: color 0.2s; font-family: inherit;
+  }
+  .cv-nav button.active, .cv-nav button:hover { color: #ffffff; }
+  .cv-nav button.disabled { color: #4a5a6a; cursor: not-allowed; }
+  .nav-badge { font-size: 10px; background: #4a5a6a; color: #171a21; padding: 2px 4px; border-radius: 2px; margin-left: 4px; }
+
+  .cv-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #2a475e;
+    border-radius: 3px;
+    padding: 4px 8px;
+    width: 300px;
+    transition: border-color 0.2s;
+  }
+  .cv-search-container:focus-within { border-color: var(--steam-accent); background: rgba(0,0,0,0.5); }
+  .cv-search-container input {
+    background: transparent; border: none; color: #fff; width: 100%;
+    padding: 6px; font-family: inherit; outline: none; font-size: 13px;
+  }
+  .cv-search-container input::placeholder { color: #5a7387; font-style: italic; }
+  .cv-search-icon { color: #5a7387; font-size: 16px; margin-right: 4px; }
+  
+  /* MAIN LAYOUT */
+  .cv-main { display: flex; flex: 1; min-height: 0; max-width: 1200px; margin: 0 auto; width: 100%; }
+  
+  /* SIDEBAR (GLOBAL FILTERS) */
+  .cv-sidebar {
+    width: 240px;
+    padding: 30px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cv-sidebar-title { font-size: 14px; color: #fff; text-transform: uppercase; margin-bottom: 12px; font-weight: 500; }
+  .cv-sidebar-item {
+    padding: 8px 10px; border-radius: 3px; cursor: pointer; color: #8f98a0;
+    font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background .15s, color .15s;
+  }
+  .cv-sidebar-item:hover, .cv-sidebar-item.active { background: rgba(102, 192, 244, 0.2); color: #fff; }
+  
+  /* CONTENT AREA */
+  .cv-content { flex: 1; overflow-y: auto; padding: 30px 20px; }
+  .cv-section { display: none; }
+  .cv-section.visible { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .section-title { font-size: 20px; font-weight: 300; color: #fff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+  
+  /* CAPSULE GRID (TRENDING) */
+  .capsule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .capsule {
+    background: rgba(0, 0, 0, 0.4); box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-radius: 2px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .capsule:hover { transform: scale(1.03); box-shadow: 0 6px 12px rgba(0,0,0,0.5); }
+  .capsule-img { height: 110px; background: linear-gradient(135deg, #2a475e, #1b2838); display: flex; align-items: center; justify-content: center; font-size: 11px; color: rgba(255,255,255,0.2); background-size: cover; background-position: center; }
+  .capsule-info { padding: 12px; }
+  .capsule-title { font-size: 14px; color: #fff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  
+  /* LIST VIEW (RECENT / SEARCH RESULTS) */
+  .games-list { display: flex; flex-direction: column; gap: 8px; }
+  .game-row {
+    display: flex; align-items: center; gap: 16px; padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(42,71,94,0.3);
+    border-radius: 3px; cursor: pointer; transition: background .15s, border-color .15s;
+  }
+  .game-row:hover { border-color: var(--steam-accent); background: rgba(42, 71, 94, 0.4); }
+  .game-thumb { width: 64px; height: 30px; background: linear-gradient(135deg, #3a576e, #1b2838); flex-shrink: 0; background-size: cover; background-position: center; }
+  .game-row-meta { flex: 1; }
+  .game-row-title { font-size: 15px; color: #fff; margin-bottom: 4px; }
+  .game-row-sub { font-size: 12px; color: #8f98a0; }
+  .config-count { font-size: 12px; color: var(--steam-accent); background: rgba(102, 192, 244, 0.1); padding: 4px 8px; border-radius: 2px; }
+
+  /* DETAIL VIEW */
+  .game-header { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 4px; }
+  .game-banner { width: 300px; height: 140px; background: linear-gradient(135deg, #2a475e, #1b2838); border-radius: 2px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); background-size: cover; background-position: center; }
+  .game-meta { flex: 1; }
+  .game-meta h2 { font-size: 28px; font-weight: normal; color: #fff; margin-bottom: 8px; }
+  .game-meta p { font-size: 14px; color: #acb2b8; line-height: 1.6; }
+  .breadcrumb { font-size: 12px; color: #8f98a0; margin-bottom: 16px; cursor: pointer; transition: color 0.2s; }
+  .breadcrumb:hover { color: #fff; }
+
+  /* BUTTONS & BADGES */
+  .meta-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 2px; font-weight: normal; border: 1px solid rgba(255,255,255,0.1); }
+  .badge-blue { background: #1a9fff20; color: #66c0f4; border-color: rgba(102,192,244,.3); }
+
+  .btn-steam {
+    background: linear-gradient(to right, #47bfff 5%, #1a44c2 60%);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: filter 0.2s;
+  }
+  .btn-steam:hover { filter: brightness(1.2); }
+
+  /* SYSTEM REQUIREMENTS */
+  .reqs-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(42,71,94,0.3);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .reqs-title { font-size: 14px; color: #fff; text-transform: uppercase; margin-bottom: 16px; font-weight: 500; }
+  .reqs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .req-col { font-size: 13px; color: #acb2b8; line-height: 1.6; }
+  .req-col strong { color: #fff; }
+  .req-col ul { list-style-type: none; margin-top: 8px; }
+  .req-col ul li { margin-bottom: 6px; }
+
+  /* PRESETS TABLE STYLES */
+  .preset-card { background: rgba(0,0,0,0.3); border: 1px solid rgba(42,71,94,0.5); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+  .preset-header { background: rgba(0,0,0,0.4); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a475e; }
+  .preset-title { font-size: 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .deck-status { font-size: 11px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; }
+  .status-Verified { background: #5c7e10; color: #d2efa9; }
+  .status-Playable { background: #a27c0e; color: #fbedb0; }
+  .status-Unknown, .status-Unverified { background: rgba(255,255,255,.1); color: var(--steam-text); }
+  .status-Unplayable { background: #7e1010; color: #efa9a9; }
+  
+  .settings-table { width: 100%; border-collapse: collapse; }
+  .settings-table th { text-align: left; font-size: 11px; color: #8f98a0; text-transform: uppercase; padding: 8px 16px; background: rgba(0,0,0,0.2); }
+  .settings-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid rgba(42,71,94,.2); }
+  .settings-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .impact-low { color: #66c0f4; } .impact-medium { color: #d3b53d; } .impact-high { color: #ff6b35; }
+  .preset-notes { padding: 12px 16px; font-size: 13px; color: #acb2b8; font-style: italic; background: rgba(0,0,0,0.1); }
+
+  /* SEARCH NO RESULTS */
+  .no-results { padding: 40px; text-align: center; color: #8f98a0; font-size: 16px; background: rgba(0,0,0,0.2); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="cv-app">
+  <div class="cv-topbar">
+    <div class="cv-topbar-inner">
+      <div class="cv-logo" onclick="showHome()">Config<span>Vault</span></div>
+      <div class="cv-nav">
+        <button class="active" onclick="showHome()">Discover</button>
+        <button onclick="showHome()">Database</button>
+        <button class="disabled" title="Coming soon">Community <span class="nav-badge">SOON</span></button>
+      </div>
+      <div class="cv-search-container">
+        <span class="cv-search-icon">⚲</span>
+        <input type="text" id="global-search" placeholder="Search games, engines or AppIDs..." oninput="handleSearch()">
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-main">
+    <div class="cv-sidebar">
+      <div class="cv-sidebar-title">Explore Presets</div>
+      <div class="cv-sidebar-item active" onclick="filterHome('all', this)">Trending Now</div>
+      <div class="cv-sidebar-item" onclick="filterHome('new', this)">Recently Added</div>
+      <div class="cv-sidebar-item" onclick="filterHome('deck', this)">Deck Verified</div>
+      
+      <div class="cv-sidebar-title" style="margin-top:24px;">Filter by Target API</div>
+      <div class="cv-sidebar-item">DirectX 12 (DX12)</div>
+      <div class="cv-sidebar-item">Vulkan (VK)</div>
+      <div class="cv-sidebar-item">DirectX 11 (DX11)</div>
+    </div>
+
+    <div class="cv-content">
+      
+      <div class="cv-section visible" id="s-home">
+        
+        <div id="home-default-view">
+          <h2 class="section-title">Trending Configurations</h2>
+          <div class="capsule-grid" id="trending-grid">
+            </div>
+
+          <h2 class="section-title">Recently Added</h2>
+          <div class="games-list" id="recent-list">
+            </div>
+        </div>
+
+        <div id="home-search-view" style="display:none;">
+          <h2 class="section-title">Search Results</h2>
+          <div class="games-list" id="search-results-list">
+            </div>
+        </div>
+        
+      </div>
+
+      <div class="cv-section" id="s-game-detail">
+        <div class="breadcrumb" onclick="showHome()">← Back to Discover</div>
+        
+        <div class="game-header">
+          <div class="game-banner" id="gd-banner"></div>
+          <div class="game-meta">
+            <h2 id="gd-title">Game Title</h2>
+            <p id="gd-desc">Game description goes here.</p>
+            <div class="meta-row">
+              <span class="badge" id="gd-dev">Developer</span>
+              <span class="badge badge-blue" id="gd-engine">Engine</span>
+              <span class="badge badge-blue" id="gd-api">API</span>
+            </div>
+            
+            <div style="margin-top:16px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <span style="color:#8f98a0; font-size:12px;">Steam AppID: </span>
+                <span id="gd-appid" style="color:#fff; font-size:12px;">000000</span>
+                <span style="color:#8f98a0; font-size:12px; margin-left: 16px;">Released: </span>
+                <span id="gd-release" style="color:#fff; font-size:12px;">YYYY-MM-DD</span>
+              </div>
+              
+              <button class="btn-steam" id="gd-store-btn">
+                View on Steam ↗
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="reqs-container" id="gd-reqs-container" style="display: none;">
+          <div class="reqs-title">System Requirements (PC)</div>
+          <div class="reqs-grid">
+            <div class="req-col" id="gd-req-min">
+              </div>
+            <div class="req-col" id="gd-req-rec">
+               </div>
+          </div>
+        </div>
+        
+        <h2 class="section-title" style="font-size:16px;">Available Presets</h2>
+        <div id="gd-presets-container">
+            </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Mocking the EXACT structure returned by the Django GameDetailSerializer
+const API_MOCK_DATA = [
+  {
+    steam_appid: 1091500,
+    engine: { id: 1, name: "REDengine", version: "4" },
+    api_target: "DX12",
+    title: "Cyberpunk 2077",
+    developer: "CD PROJEKT RED",
+    description: "Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival.",
+    release_date: "Dec 10, 2020",
+    url_header: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg",
+    url_capsule: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/capsule_231x87.jpg",
+    url_background: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/page_bg_generated_v6b.jpg",
+    requirements: { 
+      pc: { 
+        minimum: "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> 64-bit Windows 10<br></li><li><strong>Processor:</strong> Core i7-6700 or Ryzen 5 1600<br></li><li><strong>Memory:</strong> 12 GB RAM<br></li><li><strong>Graphics:</strong> GeForce GTX 1060 6GB or Radeon RX 580 8GB or Arc A380<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 70 GB available space<br></li><li><strong>Additional Notes:</strong> SSD required.</li></ul>", 
+        recommended: "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> 64-bit Windows 10<br></li><li><strong>Processor:</strong> Core i7-12700 or Ryzen 7 7800X3D<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> GeForce RTX 2060 SUPER or Radeon RX 5700 XT or Arc A770<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 70 GB available space</li></ul>" 
+      } 
+    },
+    presets: [
+      {
+        tier: 3,
+        tier_label: "Gold",
+        deck_verification: "Playable",
+        notes: "Optimized for high-end GPUs aiming for 60FPS at 1440p.",
+        config_file: null,
+        settings: [
+          { id: 1, key: "Ray Tracing", value: "Medium", impact: "High" },
+          { id: 2, key: "DLSS", value: "Quality", impact: "Medium" },
+          { id: 3, key: "Volumetric Fog", value: "High", impact: "High" }
+        ]
+      },
+      {
+        tier: 4,
+        tier_label: "Steam Deck",
+        deck_verification: "Playable",
+        notes: "Targeting stable 40Hz/40FPS on Steam Deck OLED.",
+        config_file: null,
+        settings: [
+          { id: 4, key: "Crowd Density", value: "Low", impact: "Medium" },
+          { id: 5, key: "FSR 2.1", value: "Balanced", impact: "High" }
+        ]
+      }
+    ]
+  },
+  {
+    steam_appid: 1245620,
+    engine: { id: 2, name: "FromSoftware Engine", version: "" },
+    api_target: "DX12",
+    title: "Elden Ring",
+    developer: "FromSoftware",
+    description: "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between.",
+    release_date: "Feb 24, 2022",
+    url_header: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg",
+    url_capsule: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/capsule_231x87.jpg",
+    url_background: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/page_bg_generated_v6b.jpg",
+    requirements: { 
+      pc: { 
+        minimum: "<strong>Minimum:</strong><br><ul><li><strong>OS:</strong> Windows 10<br></li><li><strong>Processor:</strong> INTEL CORE I5-8400 or AMD RYZEN 3 3300X<br></li><li><strong>Memory:</strong> 12 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GEFORCE GTX 1060 3 GB or AMD RADEON RX 580 4 GB<br></li><li><strong>DirectX:</strong> Version 12</li></ul>", 
+        recommended: "<strong>Recommended:</strong><br><ul><li><strong>OS:</strong> Windows 10/11<br></li><li><strong>Processor:</strong> INTEL CORE I7-8700K or AMD RYZEN 5 3600X<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> NVIDIA GEFORCE GTX 1070 8 GB or AMD RADEON RX VEGA 56 8 GB<br></li><li><strong>DirectX:</strong> Version 12</li></ul>" 
+      } 
+    },
+    presets: [
+      {
+        tier: 2,
+        tier_label: "Silver",
+        deck_verification: "Verified",
+        notes: "Balanced configuration for mid-range systems.",
+        config_file: null,
+        settings: [
+          { id: 6, key: "Texture Quality", value: "High", impact: "Medium" },
+          { id: 7, key: "Shadow Quality", value: "Medium", impact: "High" },
+          { id: 8, key: "Antialiasing", value: "High", impact: "Low" }
+        ]
+      }
+    ]
+  }
+];
+
+function init() {
+  renderTrending();
+  renderRecent();
+}
+
+function renderTrending() {
+  const grid = document.getElementById('trending-grid');
+  grid.innerHTML = '';
+  const trendingGames = API_MOCK_DATA.slice(0, 2);
+  
+  trendingGames.forEach(g => {
+    grid.innerHTML += `
+      <div class="capsule" onclick="showDetail(${g.steam_appid})">
+        <div class="capsule-img" style="background-image: url('${g.url_header}')"></div>
+        <div class="capsule-info">
+          <div class="capsule-title">${g.title}</div>
+          <div style="font-size:11px; color:#8f98a0">${g.developer}</div>
+          <div style="margin-top:10px; font-size:11px; color:var(--steam-accent)">${g.presets.length} presets available</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderRecent() {
+  const list = document.getElementById('recent-list');
+  list.innerHTML = '';
+  
+  API_MOCK_DATA.forEach(g => {
+    const engineStr = g.engine ? `${g.engine.name} ${g.engine.version}`.trim() : "Unknown Engine";
+    list.innerHTML += `
+      <div class="game-row" onclick="showDetail(${g.steam_appid})">
+        <div class="game-thumb" style="background-image: url('${g.url_capsule}')"></div>
+        <div class="game-row-meta">
+          <div class="game-row-title">${g.title}</div>
+          <div class="game-row-sub">${g.developer} · ${engineStr} · ${g.api_target}</div>
+        </div>
+        <div class="config-count">${g.presets.length} Configs</div>
+      </div>
+    `;
+  });
+}
+
+function handleSearch() {
+  const query = document.getElementById('global-search').value.toLowerCase();
+  const defaultView = document.getElementById('home-default-view');
+  const searchView = document.getElementById('home-search-view');
+  const resultsList = document.getElementById('search-results-list');
+  
+  if (query.trim() === '') {
+    defaultView.style.display = 'block';
+    searchView.style.display = 'none';
+    return;
+  }
+
+  defaultView.style.display = 'none';
+  searchView.style.display = 'block';
+  resultsList.innerHTML = '';
+
+  const results = API_MOCK_DATA.filter(g => 
+    g.title.toLowerCase().includes(query) || 
+    g.steam_appid.toString().includes(query) ||
+    (g.engine && g.engine.name.toLowerCase().includes(query))
+  );
+
+  if (results.length === 0) {
+    resultsList.innerHTML = `<div class="no-results">No games or configurations found for "<b>${query}</b>"</div>`;
+    return;
+  }
+
+  results.forEach(g => {
+    resultsList.innerHTML += `
+      <div class="game-row" onclick="showDetail(${g.steam_appid})">
+        <div class="game-thumb" style="background-image: url('${g.url_capsule}')"></div>
+        <div class="game-row-meta">
+          <div class="game-row-title">${g.title}</div>
+          <div class="game-row-sub">AppID: ${g.steam_appid} · ${g.developer}</div>
+        </div>
+        <div class="config-count">${g.presets.length} Configs</div>
+      </div>
+    `;
+  });
+}
+
+function showHome() {
+  document.querySelectorAll('.cv-section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('s-home').classList.add('visible');
+  document.getElementById('global-search').value = '';
+  handleSearch(); 
+}
+
+function showDetail(appId) {
+  const game = API_MOCK_DATA.find(g => g.steam_appid === appId);
+  if(!game) return;
+  
+  document.getElementById('gd-title').textContent = game.title;
+  document.getElementById('gd-desc').textContent = game.description;
+  document.getElementById('gd-dev').textContent = game.developer;
+  
+  const engineStr = game.engine ? `${game.engine.name} ${game.engine.version}`.trim() : "Unknown";
+  document.getElementById('gd-engine').textContent = engineStr;
+  document.getElementById('gd-api').textContent = game.api_target || "N/A";
+  document.getElementById('gd-appid').textContent = game.steam_appid;
+  document.getElementById('gd-release').textContent = game.release_date || "Unknown";
+  
+  const bannerEl = document.getElementById('gd-banner');
+  bannerEl.style.backgroundImage = `url('${game.url_header}')`;
+
+  // SET STORE BUTTON ACTION
+  const storeBtn = document.getElementById('gd-store-btn');
+  storeBtn.onclick = () => {
+    window.open(`https://store.steampowered.com/app/${game.steam_appid}/`, '_blank');
+  };
+
+  // Render System Requirements
+  const reqContainer = document.getElementById('gd-reqs-container');
+  const reqMinEl = document.getElementById('gd-req-min');
+  const reqRecEl = document.getElementById('gd-req-rec');
+
+  if (game.requirements && game.requirements.pc && (game.requirements.pc.minimum || game.requirements.pc.recommended)) {
+    reqMinEl.innerHTML = game.requirements.pc.minimum || "No specified minimum requirements.";
+    reqRecEl.innerHTML = game.requirements.pc.recommended || "No specified recommended requirements.";
+    reqContainer.style.display = 'block';
+  } else {
+    reqContainer.style.display = 'none';
+  }
+
+  // Render Presets
+  const container = document.getElementById('gd-presets-container');
+  container.innerHTML = '';
+  
+  if (game.presets.length === 0) {
+    container.innerHTML = '<div class="no-results">No presets available for this game yet.</div>';
+  } else {
+    game.presets.forEach(p => {
+      let rows = p.settings.map(s => `
+        <tr>
+          <td>${s.key}</td>
+          <td style="color: #fff">${s.value}</td>
+          <td class="impact-${s.impact.toLowerCase()}">${s.impact}</td>
+        </tr>
+      `).join('');
+      
+      container.innerHTML += `
+        <div class="preset-card">
+          <div class="preset-header">
+            <div class="preset-title">
+              Tier: ${p.tier_label} 
+              <span class="deck-status status-${p.deck_verification}">${p.deck_verification}</span>
+            </div>
+          </div>
+          ${p.notes ? `<div class="preset-notes">${p.notes}</div>` : ''}
+          <table class="settings-table">
+            <thead>
+              <tr><th>Setting Key</th><th>Value</th><th>Performance Impact</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    });
+  }
+
+  document.querySelectorAll('.cv-section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('s-game-detail').classList.add('visible');
+}
+
+function filterHome(filter, element) {
+  document.querySelectorAll('.cv-sidebar-item').forEach(i => i.classList.remove('active'));
+  if (element) element.classList.add('active');
+}
+
+init();
+</script>
+</body>
+</html>
