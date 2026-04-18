@@ -5,12 +5,12 @@ export const routes: Routes = [
     {
     path: 'discover',
     loadComponent: () =>
-        import('./features/home/home').then(m => m.HomeComponent),
+        import('./features/home/home/home').then(m => m.Home),
     },
     {
     path: 'game/:steamAppId',
     loadComponent: () =>
-        import('./features/game-detail/game-detail').then(m => m.GameDetailComponent),
+        import('./features/game-detail/game-detail/game-detail').then(m => m.GameDetail),
     },
     { path: '**', redirectTo: 'discover' },
 ];
