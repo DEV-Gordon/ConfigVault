@@ -1,1 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+/* Steam-like theme */
+:root {
+  --steam-global: #171a21;
+  --steam-bg: #101216;
+  --steam-accent: #66c0f4;
+  --steam-accent-hover: #67c1f5;
+  --steam-border: #2a475e;
+  --steam-text: #c7d5e0;
+  --steam-muted: #8f98a0;
+  --steam-panel: #1b2838;
+}
+
+/* Estilos para HTML de Steam (requirements) */
+.bb_ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 0.5rem; }
+.bb_ul li { margin-bottom: 0.25rem; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #171a21; }
+::-webkit-scrollbar-thumb { background: #3a576e; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #4a6b8a; }
+
+/* Animacion */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.3s ease; }
