@@ -5,7 +5,7 @@ import { AppShell } from './layout/app-shell/app-shell';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AppShell],
+  imports: [AppShell],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -59,6 +59,8 @@ class GameDetailSerializer(serializers.ModelSerializer):
         model = Game
         fields = [
             "steam_appid",
+            "created_at",
+            "updated_at",
             "engine",
             "api_target",
             "title",

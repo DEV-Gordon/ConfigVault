@@ -29,3 +29,10 @@
     to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in { animation: fadeIn 0.3s ease; }
+
+/* Global styles */
+
+html, body {
+  background: var(--steam-global);
+  color: var(--steam-text);
+}

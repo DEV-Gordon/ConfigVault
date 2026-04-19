@@ -89,6 +89,10 @@ class Game(models.Model):
     # JSON blob containing platform/system requirements and related data.
     requirements = models.JSONField(blank=True, default=dict)
 
+    # Timestamps used for ordered list endpoints (e.g. recently added).
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         # Human-readable representation prefers the title when available.
         if self.title:

@@ -1,1 +1,13 @@
-<p>trending-grid works!</p>
+<div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 mb-10">
+  <div *ngFor="let game of games.slice(0, 3)"
+        class="bg-black/40 shadow-lg rounded-sm overflow-hidden cursor-pointer hover:scale-[1.03] transition-transform">
+    <div class="h-[110px] bg-cover bg-center"
+            [style.background-image]="'url(' + game.url_header + ')'">
+    </div>
+    <div class="p-3">
+        <div class="text-[14px] text-white truncate font-medium">{{ game.title }}</div>
+        <div class="text-[11px] text-steam-muted mt-1">{{ game.developer }}</div>
+        <div class="mt-2 text-[11px] text-steam-accent">{{ game.presets.length }} presets available</div>
+    </div>
+    </div>
+</div>

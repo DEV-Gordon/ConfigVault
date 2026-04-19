@@ -1,1 +1,20 @@
-<p>recent-list works!</p>
+<div class="flex flex-col gap-2">
+  <div *ngFor="let game of games.slice(0, 4)"
+       class="flex items-center gap-4 p-3 bg-black/20 border border-steam-border/20 rounded-sm cursor-pointer hover:border-steam-accent/50 hover:bg-steam-panel/40 transition-all">
+
+    <div class="w-16 h-7 bg-cover bg-center flex-shrink-0"
+         [style.background-image]="'url(' + game.url_capsule + ')'">
+    </div>
+
+    <div class="flex-1">
+      <div class="text-[15px] text-white font-medium">{{ game.title }}</div>
+      <div class="text-[12px] text-steam-muted">
+        {{ game.developer }} · {{ getEngineDisplay(game) }} · {{ game.api_target }}
+      </div>
+    </div>
+
+    <div class="text-[12px] text-steam-accent bg-steam-accent/10 px-2 py-1 rounded-sm">
+      {{ game.presets.length }} Configs
+    </div>
+  </div>
+</div>

@@ -1,30 +1,36 @@
-<header class="bg-steam-global flex justify-center w-full h-[70px] shadow-[0_2px_4px_rgba(0,0,0,0.4)] z-10 sticky top-0">
+<header
+    class="bg-steam-global flex justify-center w-full h-[70px] shadow-[0_2px_4px_rgba(0,0,0,0.4)] z-10 sticky top-0">
     <div class="flex items-center gap-7 w-full max-w-[1200px] px-5">
 
-    <a routerLink="/discover" class="text-2xl font-medium text-[#e5e4dc] tracking-wider uppercase cursor-pointer no-underline">
-        Config<span class="font-light text-steam-accent">Vault</span>
-    </a>
-
-    <nav class="flex gap-2 h-full items-center justify-center flex-1">
-        <a routerLink="/discover" routerLinkActive="border-b-2 border-steam-accent text-white"
-            class="text-steam-muted hover:text-white text-[15px] px-3 py-1.5 uppercase font-medium transition-colors no-underline">
-        Discover
+        <a routerLink="/discover"
+            class="text-2xl font-medium text-[#e5e4dc] tracking-wider uppercase cursor-pointer no-underline">
+            Config<span class="font-light text-steam-accent">Vault</span>
         </a>
-        <span class="text-[#4a5a6a] cursor-not-allowed text-[15px] px-3 py-1.5 uppercase font-medium flex items-center">
-        Community
-        <span class="text-[10px] bg-[#4a5a6a] text-steam-global px-1 py-0.5 rounded-sm ml-1">SOON</span>
-        </span>
-    </nav>
 
-    <div class="relative flex items-center bg-black/30 border border-steam-border rounded-[3px] px-2 py-1 w-[300px] focus-within:border-steam-accent transition-all">
-        <span class="text-[#5a7387] mr-1">⚲</span>
-        <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearchInput()"
-        placeholder="Search games, engines..."
-        class="bg-transparent border-none text-white w-full p-1.5 text-[13px] outline-none placeholder:text-[#5a7387] placeholder:italic"
-        />
-    </div>
+        <nav class="flex gap-2 h-full items-center justify-center flex-1">
+            <a routerLink="/discover" routerLinkActive="text-white border-b-[3px] border-steam-accent"
+                class="text-steam-muted hover:text-white text-[15px] px-3 py-1.5 uppercase font-medium transition-colors no-underline">
+                Discover
+            </a>
+
+            <a
+                class="text-steam-muted hover:text-white text-[15px] px-3 py-1.5 uppercase font-medium transition-colors no-underline">
+                Database
+            </a>
+
+            <span
+                class="text-[#4a5a6a] cursor-not-allowed text-[15px] px-3 py-1.5 uppercase font-medium flex items-center">
+                Community
+                <span class="text-[10px] bg-[#4a5a6a] text-steam-global px-1 py-0.5 rounded-sm ml-1">SOON</span>
+            </span>
+        </nav>
+
+        <div
+            class="relative flex items-center bg-black/30 border border-steam-border rounded-[3px] px-2 py-1 w-[300px] focus-within:border-steam-accent transition-all">
+            <span class="text-[#5a7387] mr-1">⚲</span>
+            <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput()"
+                placeholder="Search games, engines..."
+                class="bg-transparent border-none text-white w-full p-1.5 text-[13px] outline-none placeholder:text-[#5a7387] placeholder:italic" />
+        </div>
     </div>
 </header>
