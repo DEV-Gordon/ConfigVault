@@ -10,5 +10,15 @@ import { Component } from '@angular/core';
 })
 
 export class Sidebar {
+  protected activePresetSection = 'trending';
+  protected activeApiSection = 'dx12';
+
+  setPresetSection(section: string): void {
+    this.activePresetSection = section;
+  }
+
+  setApiSection(section: string): void {
+    this.activeApiSection = section;
+  }
 
 }

@@ -1,7 +1,7 @@
-<h2 class="text-xl font-light text-white uppercase tracking-widest mb-5">Trending Configurations</h2>
+<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Trending Configurations</h2>
 <app-trending-grid [games]="trendingGames()"></app-trending-grid>
 
-<h2 class="text-xl font-light text-white uppercase tracking-widest mb-5 mt-10">Recently Added Games</h2>
+<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5 mt-9">Recently Added</h2>
 <app-recent-list [games]="recentGames()"></app-recent-list>
 
 <div *ngIf="loadError()" class="text-[12px] text-steam-muted mt-4">{{ loadError() }}</div>

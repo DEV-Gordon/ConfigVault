@@ -22,19 +22,22 @@ interface PaginatedResponse<T> {
 })
 export class GamesService {
   private http = inject(HttpClient);
-  private baseurl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
 
+  // Fetch a single game by Steam AppID.
   getGame(steamAppId: number): Observable<Game> {
-    return this.http.get<Game>(`${this.baseurl}/games/${steamAppId}/`);
+    return this.http.get<Game>(`${this.baseUrl}/games/${steamAppId}/`);
   }
 
+  // Keep result order aligned with the ids list the UI sends.
   getGamesByIds(ids: number[]): Observable<Game[]> {
     const idsQuery = ids.join(',');
     return this.http
-      .get<Game[] | PaginatedResponse<Game>>(`${this.baseurl}/games/?ids=${idsQuery}`)
+      .get<Game[] | PaginatedResponse<Game>>(`${this.baseUrl}/games/?ids=${idsQuery}`)
       .pipe(map((response) => (Array.isArray(response) ? response : response.results ?? [])));
   }
 
+  // Generic list endpoint helper used for recent/fallback sections.
   getGames(ordering = '-created_at', limit = 8, page = 1, pageSize = 20): Observable<Game[]> {
     const params = new URLSearchParams();
     params.set('ordering', ordering);
@@ -43,10 +46,11 @@ export class GamesService {
     params.set('page_size', String(pageSize));
 
     return this.http
-      .get<Game[] | PaginatedResponse<Game>>(`${this.baseurl}/games/?${params.toString()}`)
+      .get<Game[] | PaginatedResponse<Game>>(`${this.baseUrl}/games/?${params.toString()}`)
       .pipe(map((response) => (Array.isArray(response) ? response : response.results ?? [])));
   }
 
+  // Home feed endpoint returns both sections in one network roundtrip.
   getHomeFeed(trendingIds: number[] = [], trendingLimit = 6, recentLimit = 8): Observable<HomeFeedResponse> {
     const params = new URLSearchParams();
     if (trendingIds.length) {
@@ -55,6 +59,6 @@ export class GamesService {
     params.set('trending_limit', String(trendingLimit));
     params.set('recent_limit', String(recentLimit));
     params.set('recent_scope', 'games');
-    return this.http.get<HomeFeedResponse>(`${this.baseurl}/home-feed/?${params.toString()}`);
+    return this.http.get<HomeFeedResponse>(`${this.baseUrl}/home-feed/?${params.toString()}`);
   }
 }

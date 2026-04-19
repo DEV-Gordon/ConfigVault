@@ -22,15 +22,17 @@ export class Home {
   protected recentGames = signal<Game[]>([]);
   protected loadError = signal<string | null>(null);
   
-  // IDS of games to fetch for the trending section. In a real app, this would likely come from an API endpoint.
-  private trendingIds = [1962663, 570, 440, 1091500, 381210]; // Ejemplo: Cyberpunk, Dota 2, TF2, etc.
+  // Temporary curated IDs while product ranking logic is not implemented server-side.
+  private trendingIds = [1962663, 570, 440, 1091500, 381210, 3321460];
 
   constructor() {
+    // Preferred path: one endpoint returning both sections for Home.
     this.gamesService
       .getHomeFeed(this.trendingIds, 6, 8)
       .pipe(
         catchError(() => {
           this.loadError.set('Failed to load home feed. Displaying fallback data.');
+          // Fallback path keeps sections independent when feed endpoint is unavailable.
           return forkJoin({
             trending: this.gamesService.getGamesByIds(this.trendingIds),
             recent: this.gamesService.getGames('-created_at', 8),

@@ -1,13 +1,14 @@
 <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 mb-10">
-  <div *ngFor="let game of games.slice(0, 3)"
-        class="bg-black/40 shadow-lg rounded-sm overflow-hidden cursor-pointer hover:scale-[1.03] transition-transform">
+  <a *ngFor="let game of games.slice(0, 6)"
+        [routerLink]="['/game', game.steam_appid]"
+        class="trending-card bg-black/30 shadow-lg rounded-sm overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform no-underline block">
     <div class="h-[110px] bg-cover bg-center"
             [style.background-image]="'url(' + game.url_header + ')'">
     </div>
-    <div class="p-3">
+    <div class="p-3 flex-1 flex flex-col">
         <div class="text-[14px] text-white truncate font-medium">{{ game.title }}</div>
-        <div class="text-[11px] text-steam-muted mt-1">{{ game.developer }}</div>
-        <div class="mt-2 text-[11px] text-steam-accent">{{ game.presets.length }} presets available</div>
+        <div class="dev-clamp text-[11px] text-steam-muted mt-[6px]">{{ game.developer }}</div>
+        <div class="mt-auto pt-[6px] text-[11px] text-[#66c0f4]">{{ game.presets.length }} presets available</div>
     </div>
-    </div>
+    </a>
 </div>

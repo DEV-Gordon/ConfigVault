@@ -1,5 +1,4 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 import { AppShell } from './layout/app-shell/app-shell';
 
 @Component({
@@ -10,5 +9,4 @@ import { AppShell } from './layout/app-shell/app-shell';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('frontend');
 }

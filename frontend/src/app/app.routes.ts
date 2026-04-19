@@ -8,6 +8,16 @@ export const routes: Routes = [
         import('./features/home/home/home').then(m => m.Home),
     },
     {
+    path: 'database',
+    loadComponent: () =>
+        import('./features/database/database/database').then(m => m.Database),
+    },
+    {
+    path: 'community',
+    loadComponent: () =>
+        import('./features/community/community/community').then(m => m.Community),
+    },
+    {
     path: 'game/:steamAppId',
     loadComponent: () =>
         import('./features/game-detail/game-detail/game-detail').then(m => m.GameDetail),

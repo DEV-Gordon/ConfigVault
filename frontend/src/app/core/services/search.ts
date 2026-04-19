@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { Game } from '../models/game';
 
 @Injectable({
@@ -9,8 +9,9 @@ export class Search {
   private query = signal('');
   private games = signal<Game[]>([]);
 
+  // Normalize search text once so all filters stay consistent.
   setQuery(q: string) {
-    this.query.set(q.toLowerCase().trim());
+    this.query.set((q ?? '').toLowerCase().trim());
   }
 
   setGames(games: Game[]) {
@@ -21,27 +22,27 @@ export class Search {
     this.query.set('');
   }
 
+  // In-memory filter over loaded games for instant UI feedback.
   readonly results = computed((): Game[] => {
     const q = this.query();
     if (!q) {
       return [];
     }
 
-    return this.games().filter(game => {
+    return this.games().filter((game) => {
       const title = (game.title ?? '').toLowerCase();
-      const steam_appid = (game.steam_appid ?? '').toString();
+      const steamAppId = (game.steam_appid ?? '').toString();
       const engine = (game.engine?.name ?? '').toLowerCase();
       const developer = (game.developer ?? '').toLowerCase();
-    
-    return (
-      title.includes(q) ||
-      steam_appid.includes(q) ||
-      engine.includes(q) ||
-      developer.includes(q)
-    );
-  });
+
+      return (
+        title.includes(q) ||
+        steamAppId.includes(q) ||
+        engine.includes(q) ||
+        developer.includes(q)
+      );
+    });
   });
 
   readonly hasResults = computed(() => this.results().length > 0);
-
-  }
+}
