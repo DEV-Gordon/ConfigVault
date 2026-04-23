@@ -1,19 +1,23 @@
 <div class="flex flex-col gap-2">
-  <a *ngFor="let game of games.slice(0, 4)"
+  <!-- One clickable row per game. -->
+  <a *ngFor="let game of visibleGames"
   (click)="openGame(game)"
   class="recent-row flex items-center gap-4 p-3 rounded-sm cursor-pointer transition-all no-underline">
 
+    <!-- Capsule image (small cover) from Steam metadata. -->
     <div class="w-16 h-7 bg-cover bg-center flex-shrink-0"
          [style.background-image]="'url(' + game.url_capsule + ')'">
     </div>
 
     <div class="flex-1">
       <div class="text-[15px] text-white font-medium">{{ game.title }}</div>
+      <!-- Compact metadata line: developer, engine, and API target. -->
       <div class="recent-meta text-[12px] text-steam-muted">
-        {{ game.developer }} · {{ getEngineDisplay(game) }} · {{ game.api_target }}
+        {{ getDeveloperDisplay(game) }} · {{ getEngineDisplay(game) }} · {{ game.api_target }}
       </div>
     </div>
 
+    <!-- Quick visual count of available presets/configs. -->
     <div class="recent-config-badge text-[12px] px-2 py-1 rounded-sm">
       {{ game.presets.length }} Configs
     </div>

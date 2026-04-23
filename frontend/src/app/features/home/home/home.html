@@ -1,7 +1,17 @@
-<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Trending Configurations</h2>
-<app-trending-grid [games]="trendingGames()"></app-trending-grid>
+<!-- Filtered mode: show one unified list with a dynamic heading. -->
+<ng-container *ngIf="isFilteredView(); else defaultHome">
+	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">{{ filterTitle() }}</h2>
+	<app-recent-list [games]="filteredGames()" [maxItems]="null"></app-recent-list>
+</ng-container>
 
-<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5 mt-9">Recently Added</h2>
-<app-recent-list [games]="recentGames()"></app-recent-list>
+<!-- Default mode: keep the original two sections (Trending + Recently Added). -->
+<ng-template #defaultHome>
+	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Trending Configurations</h2>
+	<app-trending-grid [games]="trendingGames()"></app-trending-grid>
 
+	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5 mt-9">Recently Added</h2>
+	<app-recent-list [games]="recentGames()"></app-recent-list>
+</ng-template>
+
+<!-- Optional error shown when Home feed request fails and fallback is used. -->
 <div *ngIf="loadError()" class="text-[12px] text-steam-muted mt-4">{{ loadError() }}</div>

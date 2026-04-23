@@ -2,39 +2,39 @@
     <h3 class="text-[14px] text-white uppercase mb-3 font-medium">Explore Presets</h3>
     <button (click)="setPresetSection('trending')"
         class="sidebar-item"
-        [ngClass]="activePresetSection === 'trending' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="presetSection === 'trending' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         Trending Now
     </button>
     <button (click)="setPresetSection('recent')"
         class="sidebar-item"
-        [ngClass]="activePresetSection === 'recent' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="presetSection === 'recent' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         Recently Added
     </button>
     <button (click)="setPresetSection('deck')"
         class="sidebar-item"
-        [ngClass]="activePresetSection === 'deck' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="presetSection === 'deck' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         Deck Verified
     </button>
 
     <h3 class="text-[14px] text-white uppercase mt-6 mb-3 font-medium">Target API</h3>
     <button (click)="setApiSection('dx12')" class="sidebar-item"
-        [ngClass]="activeApiSection === 'dx12' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="apiSection === 'dx12' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 12 (DX12)
     </button>
     <button (click)="setApiSection('dx11')" class="sidebar-item"
-        [ngClass]="activeApiSection === 'dx11' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="apiSection === 'dx11' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 11 (DX11)
     </button>
     <button (click)="setApiSection('dx9')" class="sidebar-item"
-        [ngClass]="activeApiSection === 'dx9' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="apiSection === 'dx9' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 9 (DX9)
     </button>
     <button (click)="setApiSection('gl')" class="sidebar-item"
-        [ngClass]="activeApiSection === 'gl' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="apiSection === 'gl' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         OpenGL (GL)
     </button>
     <button (click)="setApiSection('vk')" class="sidebar-item"
-        [ngClass]="activeApiSection === 'vk' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        [ngClass]="apiSection === 'vk' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         Vulkan (VK)
     </button>
 </aside>

@@ -10,6 +10,12 @@ export interface HomeFeedResponse {
   recent_scope?: string;
 }
 
+export interface HomeFeedFilters {
+  // Matches backend query param names expected by /api/home-feed/.
+  preset_section?: string;
+  api_target?: string;
+}
+
 interface PaginatedResponse<T> {
   count: number;
   next: string | null;
@@ -31,6 +37,7 @@ export class GamesService {
 
   // Keep result order aligned with the ids list the UI sends.
   getGamesByIds(ids: number[]): Observable<Game[]> {
+    // Backend supports ids=1,2,3 and preserves order in response.
     const idsQuery = ids.join(',');
     return this.http
       .get<Game[] | PaginatedResponse<Game>>(`${this.baseUrl}/games/?ids=${idsQuery}`)
@@ -39,6 +46,7 @@ export class GamesService {
 
   // Generic list endpoint helper used for recent/fallback sections.
   getGames(ordering = '-created_at', limit = 8, page = 1, pageSize = 20): Observable<Game[]> {
+    // URLSearchParams helps build safe query strings without manual concatenation.
     const params = new URLSearchParams();
     params.set('ordering', ordering);
     params.set('limit', String(limit));
@@ -51,7 +59,13 @@ export class GamesService {
   }
 
   // Home feed endpoint returns both sections in one network roundtrip.
-  getHomeFeed(trendingIds: number[] = [], trendingLimit = 6, recentLimit = 8): Observable<HomeFeedResponse> {
+  getHomeFeed(
+    trendingIds: number[] = [],
+    trendingLimit = 6,
+    recentLimit = 8,
+    filters: HomeFeedFilters = {}
+  ): Observable<HomeFeedResponse> {
+    // This endpoint is optimized for Home: one request returns both sections.
     const params = new URLSearchParams();
     if (trendingIds.length) {
       params.set('trending_ids', trendingIds.join(','));
@@ -59,6 +73,16 @@ export class GamesService {
     params.set('trending_limit', String(trendingLimit));
     params.set('recent_limit', String(recentLimit));
     params.set('recent_scope', 'games');
+
+    if (filters.preset_section) {
+      // Optional sidebar section filter (trending/recent/deck).
+      params.set('preset_section', filters.preset_section);
+    }
+    if (filters.api_target) {
+      // Optional API target filter (dx12, dx11, dx9, gl, vk, ...).
+      params.set('api_target', filters.api_target);
+    }
+
     return this.http.get<HomeFeedResponse>(`${this.baseUrl}/home-feed/?${params.toString()}`);
   }
 }
