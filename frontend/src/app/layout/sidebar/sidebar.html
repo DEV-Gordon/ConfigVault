@@ -17,6 +17,17 @@
     </button>
 
     <h3 class="text-[14px] text-white uppercase mt-6 mb-3 font-medium">Target API</h3>
+    <button (click)="setApiSection('gl')" class="sidebar-item"
+        [ngClass]="apiSection === 'gl' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        OpenGL (GL)
+    </button>
+    <button (click)="setApiSection('vk')" class="sidebar-item"
+        [ngClass]="apiSection === 'vk' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        Vulkan (VK)
+    </button>
+
+    <div class="my-1 mt-1 mb-1 border-t border-[rgba(255,255,255,0.12)]"></div>
+
     <button (click)="setApiSection('dx12')" class="sidebar-item"
         [ngClass]="apiSection === 'dx12' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 12 (DX12)
@@ -40,13 +51,5 @@
     <button (click)="setApiSection('dx7')" class="sidebar-item"
         [ngClass]="apiSection === 'dx7' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 7 (DX7)
-    </button>
-    <button (click)="setApiSection('gl')" class="sidebar-item"
-        [ngClass]="apiSection === 'gl' ? 'sidebar-item-active' : 'sidebar-item-muted'">
-        OpenGL (GL)
-    </button>
-    <button (click)="setApiSection('vk')" class="sidebar-item"
-        [ngClass]="apiSection === 'vk' ? 'sidebar-item-active' : 'sidebar-item-muted'">
-        Vulkan (VK)
     </button>
 </aside>

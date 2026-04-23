@@ -1,0 +1,13 @@
+.requirements-html :is(ul, ol) {
+	margin: 0.4rem 0 0.4rem 1rem;
+	padding: 0;
+}
+
+.requirements-html :is(li) {
+	margin: 0.2rem 0;
+}
+
+.requirements-html :is(strong) {
+	color: #ffffff;
+	font-weight: 600;
+}

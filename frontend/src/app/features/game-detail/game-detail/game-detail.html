@@ -1,1 +1,55 @@
-<p>game-detail works!</p>
+<section class="animate-fade-in">
+	<a routerLink="/discover" class="text-[12px] text-[#66c0f4] hover:text-[#9ad9ff] no-underline uppercase tracking-[0.12em]">
+		Back To Discover
+	</a>
+
+	<div *ngIf="isLoading()" class="mt-4 rounded-sm border border-[rgba(102,192,244,0.2)] bg-black/20 p-5 text-steam-muted text-[14px]">
+		Loading game detail...
+	</div>
+
+	<div *ngIf="!isLoading() && loadError()" class="mt-4 rounded-sm border border-[rgba(164,46,63,0.4)] bg-[rgba(164,46,63,0.12)] p-5 text-[14px] text-[#ffd8de]">
+		{{ loadError() }}
+	</div>
+
+	<ng-container *ngIf="!isLoading() && !loadError() && game() as gameData">
+		<article class="mt-4 overflow-hidden rounded-sm border border-[rgba(102,192,244,0.2)] bg-black/25">
+			<div
+				class="min-h-[180px] bg-cover bg-center"
+				[style.background-image]="'linear-gradient(to bottom, rgba(16,18,22,0.1), rgba(16,18,22,0.8)), url(' + (gameData.url_header || gameData.url_background || '') + ')'"
+			></div>
+
+			<div class="p-5 md:p-6">
+				<h1 class="text-2xl md:text-3xl font-medium text-white leading-tight">{{ gameData.title }}</h1>
+				<p class="mt-2 text-[13px] text-steam-muted">
+					{{ gameData.developer || 'Unknown Developer' }}
+					<span class="px-2 text-[rgba(255,255,255,0.22)]">|</span>
+					{{ gameData.engine?.name || 'Unknown Engine' }}
+					<span *ngIf="gameData.engine?.version"> {{ gameData.engine?.version }}</span>
+					<span class="px-2 text-[rgba(255,255,255,0.22)]">|</span>
+					{{ gameData.api_target || 'Unknown API' }}
+				</p>
+
+				<p class="mt-4 text-[14px] leading-7 text-[#c8d4df]" *ngIf="gameData.description">{{ gameData.description }}</p>
+			</div>
+		</article>
+
+		<div class="mt-6 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-6">
+			<section>
+				<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Presets</h2>
+
+				<div *ngIf="!gameData.presets.length" class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4 text-[13px] text-steam-muted">
+					No presets available for this game yet.
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="gameData.presets.length">
+					<app-preset-card *ngFor="let preset of gameData.presets" [preset]="preset"></app-preset-card>
+				</div>
+			</section>
+
+			<section>
+				<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Requirements</h2>
+				<app-requirements-panel [requirements]="gameData.requirements"></app-requirements-panel>
+			</section>
+		</div>
+	</ng-container>
+</section>
