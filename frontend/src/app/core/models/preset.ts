@@ -9,7 +9,7 @@ export interface Preset {
     
     tier: number;
     tier_label: TierLabel;
-    deckVerification: DeckVerification;
+    deck_verification: DeckVerification;
     notes: string;
     config_file?: string | null;
     settings: Setting[];

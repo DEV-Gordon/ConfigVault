@@ -25,9 +25,21 @@
         [ngClass]="apiSection === 'dx11' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 11 (DX11)
     </button>
+    <button (click)="setApiSection('dx10')" class="sidebar-item"
+        [ngClass]="apiSection === 'dx10' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        DirectX 10 (DX10)
+    </button>
     <button (click)="setApiSection('dx9')" class="sidebar-item"
         [ngClass]="apiSection === 'dx9' ? 'sidebar-item-active' : 'sidebar-item-muted'">
         DirectX 9 (DX9)
+    </button>
+    <button (click)="setApiSection('dx8')" class="sidebar-item"
+        [ngClass]="apiSection === 'dx8' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        DirectX 8 (DX8)
+    </button>
+    <button (click)="setApiSection('dx7')" class="sidebar-item"
+        [ngClass]="apiSection === 'dx7' ? 'sidebar-item-active' : 'sidebar-item-muted'">
+        DirectX 7 (DX7)
     </button>
     <button (click)="setApiSection('gl')" class="sidebar-item"
         [ngClass]="apiSection === 'gl' ? 'sidebar-item-active' : 'sidebar-item-muted'">

@@ -34,7 +34,7 @@ export class Home {
   protected loadError = signal<string | null>(null);
   
   // Temporary curated IDs while product ranking logic is not implemented server-side.
-  private trendingIds = [1962663, 570, 440, 1091500, 381210, 3321460];
+  private trendingIds = [1962663, 570, 440, 1091500, 381210, 3321460, 220];
 
   constructor() {
     // Every URL filter change triggers a fresh backend request.
@@ -50,6 +50,7 @@ export class Home {
     const filters: HomeFeedFilters = {};
     const presetSection = params['preset_section'];
     const apiTarget = params['api_target'];
+    const normalizedPresetSection = (presetSection ?? '').toLowerCase();
 
     // Keep the default Home layout only when no filter is selected.
     const hasPresetFilter = Boolean(presetSection);
@@ -67,8 +68,15 @@ export class Home {
       filters.api_target = apiTarget;
     }
 
+    // Keep default home behavior compact (6/8), but increase limits in
+    // filtered mode so matching games are not hidden by summary caps.
+    const trendingLimit = normalizedPresetSection === 'trending'
+      ? this.trendingIds.length
+      : (hasPresetFilter || hasApiFilter ? this.trendingIds.length : 6);
+    const recentLimit = hasPresetFilter || hasApiFilter ? 100 : 8;
+
     this.gamesService
-      .getHomeFeed(this.trendingIds, 6, 8, filters)
+      .getHomeFeed(this.trendingIds, trendingLimit, recentLimit, filters)
       .pipe(
         catchError(() => {
           // User-friendly message + fallback strategy so the screen is not empty.
@@ -91,9 +99,9 @@ export class Home {
         this.trendingGames.set(trending);
         this.recentGames.set(recent);
 
-        // Merge sections and deduplicate by Steam AppID for filtered mode.
-        const merged = this.mergeUniqueGames(trending, recent);
-        this.filteredGames.set(merged);
+        this.filteredGames.set(
+          this.buildFilteredGamesList(normalizedPresetSection, trending, recent)
+        );
       });
   }
 
@@ -144,5 +152,23 @@ export class Home {
       }
     }
     return Array.from(map.values());
+  }
+
+  private buildFilteredGamesList(
+    presetSection: string,
+    trending: Game[],
+    recent: Game[]
+  ): Game[] {
+    // Sidebar behavior:
+    // - Trending Now => curated/hardcoded trending response only
+    // - Recently Added => recent ordered response only
+    // - Deck Verified or API-only filtering => combined deduplicated list
+    if (presetSection === 'trending') {
+      return trending;
+    }
+    if (presetSection === 'recent') {
+      return recent;
+    }
+    return this.mergeUniqueGames(trending, recent);
   }
 }
