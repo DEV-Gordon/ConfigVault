@@ -29,7 +29,92 @@ class GameDetailView(generics.RetrieveAPIView):
     # Use the `steam_appid` field in the URL to look up the Game instance.
     lookup_field = "steam_appid"
 
+class SidebarFilterMixin:
+    """Mixin to add sidebar filter support to list views.
 
+    This mixin provides a method to apply filtering based on query
+    parameters, which can be used in any list view that needs sidebar
+    filters. The `filter_queryset()` method can be called in the view's
+    `get()` method before pagination and serialization.
+    """
+
+    _ALLOWED_ORDERING_FIELDS = {
+        "created_at",
+        "updated_at",
+        "steam_appid",
+        "title",
+        "release_date",
+    }   
+
+    _VALID_API_TARGETS = {
+        "DX7", "DX8", "DX9", "DX10", "DX11", "DX12",
+        "GL", "GLES", "VK", "MTL", "WEBGL", "OTHER",
+    }
+
+    _API_TARGET_ALIASES = {
+        "dx7": "DX7",
+        "dx8": "DX8",
+        "dx9": "DX9",
+        "dx10": "DX10",
+        "dx11": "DX11",
+        "dx12": "DX12",
+        "gl": "GL",
+        "opengl": "GL",
+        "gles": "GLES",
+        "opengl_es": "GLES",
+        "vk": "VK",
+        "vulkan": "VK",
+        "mtl": "MTL",
+        "metal": "MTL",
+        "webgl": "WEBGL",
+        "other": "OTHER",
+    }
+
+    def _sanitize_ordering(self, ordering_raw):
+        if not ordering_raw:
+            return "-created_at"
+
+        cleaned = ordering_raw.strip()
+        prefix = "-" if cleaned.startswith("-") else ""
+        field = cleaned.lstrip("-")
+
+        if field in self._ALLOWED_ORDERING_FIELDS:
+            return f"{prefix}{field}"
+        return "-created_at"
+    
+    def _normalize_api_target(self, value):
+        if not value:
+            return None
+
+        token = value.strip()
+        if not token:
+            return None
+
+        alias = self._API_TARGET_ALIASES.get(token.lower())
+        if alias:
+            return alias
+
+        token_upper = token.upper()
+        if token_upper in self._VALID_API_TARGETS:
+            return token_upper
+
+        return None
+
+    def _apply_sidebar_filters(self, queryset, params):
+        preset_section = (params.get("preset_section") or "").strip().lower()
+        api_target = self._normalize_api_target(params.get("api_target"))
+
+        if api_target:
+            queryset = queryset.filter(api_target=api_target)
+
+        # "Deck Verified" sidebar filter.
+        if preset_section == "deck":
+            queryset = queryset.filter(
+                presets__deck_verification="Verified"
+            ).distinct()
+
+        return queryset
+    
 class GameListView(APIView):
     """Return a list of games with optional filtering and ordering.
 
@@ -46,6 +131,7 @@ class GameListView(APIView):
         "title",
         "release_date",
     }
+
 
     def _sanitize_ordering(self, ordering_raw):
         if not ordering_raw:
@@ -106,7 +192,6 @@ class GameListView(APIView):
             return paginator.get_paginated_response(serializer.data)
 
         return Response(GameDetailSerializer(queryset, many=True).data)
-
 
 class HomeFeedView(APIView):
     """Return home sections in one request: trending and recent."""
