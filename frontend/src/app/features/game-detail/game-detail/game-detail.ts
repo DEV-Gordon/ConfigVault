@@ -24,6 +24,7 @@ export class GameDetail {
   protected game = signal<Game | null>(null);
   protected isLoading = signal(true);
   protected loadError = signal<string | null>(null);
+  protected expandedPresetIndex = signal<number | null>(null);
 
   constructor() {
     // Listen to /game/:steamAppId and fetch game details on route changes.
@@ -52,7 +53,16 @@ export class GameDetail {
       )
       .subscribe((response) => {
         this.game.set(response);
+        this.expandedPresetIndex.set(null);
         this.isLoading.set(false);
       });
+  }
+
+  protected isPresetExpanded(index: number): boolean {
+    return this.expandedPresetIndex() === index;
+  }
+
+  protected togglePreset(index: number): void {
+    this.expandedPresetIndex.set(this.expandedPresetIndex() === index ? null : index);
   }
 }

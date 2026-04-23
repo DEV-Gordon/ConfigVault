@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Preset } from '../../../core/models/preset';
 
@@ -12,14 +12,19 @@ import { Preset } from '../../../core/models/preset';
 })
 export class PresetCard {
   @Input({ required: true }) preset!: Preset;
-  protected isExpanded = false;
+  @Input() isExpanded = false;
+  @Output() toggleRequested = new EventEmitter<void>();
 
   toggleExpanded(): void {
-    this.isExpanded = !this.isExpanded;
+    this.toggleRequested.emit();
   }
 
   get settingsCount(): number {
     return this.preset?.settings?.length ?? 0;
+  }
+
+  get isSteamDeckPreset(): boolean {
+    return this.preset?.tier_label === 'Steam Deck';
   }
 
   getDeckBadgeClass(value: string | undefined): string {

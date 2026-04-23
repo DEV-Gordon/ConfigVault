@@ -1,7 +1,8 @@
-<article class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4">
+<article class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-3">
 	<div class="flex items-start justify-between gap-3">
 		<h3 class="text-[15px] text-white font-medium">{{ preset.tier_label }} Preset</h3>
 		<span
+			*ngIf="isSteamDeckPreset"
 			class="rounded-sm border px-2 py-1 text-[11px] uppercase tracking-[0.08em]"
 			[ngClass]="getDeckBadgeClass(preset.deck_verification)"
 		>
@@ -9,24 +10,54 @@
 		</span>
 	</div>
 
-	<p class="mt-3 text-[13px] text-[#c8d4df] leading-6" *ngIf="preset.notes; else noNotes">
+	<p class="mt-2 text-[13px] text-[#c8d4df] leading-6" *ngIf="preset.notes; else noNotes">
 		{{ preset.notes }}
 	</p>
 	<ng-template #noNotes>
-		<p class="mt-3 text-[13px] text-steam-muted">No notes for this preset.</p>
+		<p class="mt-2 text-[13px] text-steam-muted">No notes for this preset.</p>
 	</ng-template>
 
-	<div class="mt-4 border-t border-[rgba(255,255,255,0.08)] pt-3">
-		<h4 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4]">Settings</h4>
-		<ul class="mt-2 space-y-2" *ngIf="preset.settings.length; else noSettings">
-			<li class="text-[12px] text-[#cfd9e2]" *ngFor="let setting of preset.settings">
-				<span class="text-white">{{ setting.key }}:</span>
-				{{ setting.value }}
-				<span class="text-steam-muted">({{ setting.impact }})</span>
-			</li>
-		</ul>
-		<ng-template #noSettings>
-			<p class="text-[12px] text-steam-muted">No settings available.</p>
-		</ng-template>
+	<div class="mt-3 border-t border-[rgba(255,255,255,0.08)] pt-2">
+		<div class="flex items-center justify-between gap-3">
+			<h4 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4]">Settings</h4>
+			<p class="flex-1 text-center text-[12px] text-steam-muted" *ngIf="!isExpanded && settingsCount > 0">
+			Click "Show" to expand.
+			</p>
+			<button
+				type="button"
+				class="preset-toggle-btn"
+				(click)="toggleExpanded()"
+				[attr.aria-expanded]="isExpanded"
+				[disabled]="settingsCount === 0"
+			>
+				{{ isExpanded ? 'Hide' : 'Show' }}
+				<span class="text-[#9eb4c6]">({{ settingsCount }})</span>
+			</button>
+		</div>
+
+		<div class="mt-2" *ngIf="isExpanded">
+			<div class="preset-table-wrap" *ngIf="preset.settings.length; else noSettings">
+				<table class="preset-table w-full text-left text-[12px] text-[#d3dce5]">
+					<thead>
+						<tr>
+							<th class="py-2 pr-3 font-medium text-[#9eb4c6] uppercase tracking-[0.08em]">Setting</th>
+							<th class="py-2 pr-3 font-medium text-[#9eb4c6] uppercase tracking-[0.08em]">Value</th>
+							<th class="py-2 font-medium text-[#9eb4c6] uppercase tracking-[0.08em]">Impact</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let setting of preset.settings">
+							<td class="py-2 pr-3 text-white align-top">{{ setting.key }}</td>
+							<td class="py-2 pr-3 align-top">{{ setting.value }}</td>
+							<td class="py-2 align-top text-steam-muted">{{ setting.impact }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<ng-template #noSettings>
+				<p class="text-[12px] text-steam-muted">No settings available.</p>
+			</ng-template>
+		</div>
 	</div>
 </article>

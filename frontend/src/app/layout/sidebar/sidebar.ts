@@ -30,14 +30,7 @@ export class Sidebar {
     if (this.presetSection === section) {
       this.clearPresetSection();
     } else {
-      this.router.navigate([], {
-        relativeTo: this.route.root,
-        queryParams: {
-          preset_section: section,
-        },
-        // Keep other query params untouched (for example, api_target).
-        queryParamsHandling: 'merge',
-      });
+      this.navigateToDiscover(section, this.apiSection);
     }
   }
 
@@ -46,36 +39,27 @@ export class Sidebar {
     if (this.apiSection === section) {
       this.clearApiSection();
     } else {
-      this.router.navigate([], {
-        relativeTo: this.route.root,
-        queryParams: {
-          api_target: section,
-        },
-        // Keep other query params untouched (for example, preset_section).
-        queryParamsHandling: 'merge',
-      });
+      this.navigateToDiscover(this.presetSection, section);
     }
   }
 
   private clearPresetSection(): void {
-    // Setting a query param to null removes it from the URL.
-    this.router.navigate([], {
-      relativeTo: this.route.root,
-      queryParams: {
-        preset_section: null,
-      },
-      queryParamsHandling: 'merge',
-    });
+    this.navigateToDiscover(null, this.apiSection);
   }
 
   private clearApiSection(): void {
-    // Setting a query param to null removes it from the URL.
-    this.router.navigate([], {
-      relativeTo: this.route.root,
-      queryParams: {
-        api_target: null,
-      },
-      queryParamsHandling: 'merge',
-    });
+    this.navigateToDiscover(this.presetSection, null);
+  }
+
+  private navigateToDiscover(presetSection: string | null, apiSection: string | null): void {
+    const queryParams: Record<string, string> = {};
+    if (presetSection) {
+      queryParams['preset_section'] = presetSection;
+    }
+    if (apiSection) {
+      queryParams['api_target'] = apiSection;
+    }
+
+    this.router.navigate(['/discover'], { queryParams });
   }
 }

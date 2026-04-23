@@ -1,0 +1,49 @@
+.preset-toggle-btn {
+	border: 1px solid rgba(102, 192, 244, 0.25);
+	background: rgba(102, 192, 244, 0.08);
+	color: #cfe9fb;
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	padding: 7px 10px;
+	text-transform: uppercase;
+	border-radius: 4px;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.preset-toggle-btn:hover:not(:disabled) {
+	background: rgba(102, 192, 244, 0.14);
+	border-color: rgba(102, 192, 244, 0.45);
+}
+
+.preset-toggle-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.preset-table-wrap {
+	max-height: 280px;
+	overflow: auto;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 4px;
+	background: rgba(255, 255, 255, 0.01);
+}
+
+.preset-table thead tr {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	background: rgba(255, 255, 255, 0.02);
+}
+
+.preset-table tbody tr {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.preset-table tbody tr:last-child {
+	border-bottom: none;
+}
+
+.preset-table th,
+.preset-table td {
+	padding-left: 10px;
+	padding-right: 10px;
+}
