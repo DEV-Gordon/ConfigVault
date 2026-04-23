@@ -9,6 +9,9 @@ export class Search {
   private query = signal('');
   private games = signal<Game[]>([]);
 
+  // Home uses this to decide when the search bar should replace the normal layout.
+  readonly hasQuery = computed(() => this.query().length > 0);
+
   // Normalize search text once so all filters stay consistent.
   setQuery(q: string) {
     this.query.set((q ?? '').toLowerCase().trim());
@@ -19,6 +22,7 @@ export class Search {
   }
 
   clearQuery() {
+    // Reset only the text; Home will keep the current cached game list.
     this.query.set('');
   }
 

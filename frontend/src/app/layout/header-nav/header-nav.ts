@@ -15,6 +15,7 @@ export class HeaderNav {
   protected searchQuery = '';
 
   onSearchInput(): void {
+    // Keep the search service in sync with the header input on every change.
     this.search.setQuery(this.searchQuery);
   }
 }

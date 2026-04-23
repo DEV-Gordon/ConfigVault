@@ -178,6 +178,7 @@ class Setting(models.Model):
     # Impact levels for a particular setting. Stored as strings to make
     # them human-readable when inspecting DB rows.
     class Impact(models.TextChoices):
+        NONE = "", "None"
         LOW = "Low", "Low"
         MEDIUM = "Medium", "Medium"
         HIGH = "High", "High"
@@ -186,4 +187,4 @@ class Setting(models.Model):
     preset = models.ForeignKey(Preset, on_delete=models.CASCADE, related_name="settings")
     key = models.CharField(max_length=64)
     value = models.CharField(max_length=256)
-    impact = models.CharField(max_length=32, choices=Impact.choices)
+    impact = models.CharField(max_length=32, choices=Impact.choices, blank=True, default=Impact.NONE)

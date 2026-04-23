@@ -1,6 +1,6 @@
 export interface Setting {}
 
-export type ImpactLevel = 'low' | 'medium' | 'high';
+export type ImpactLevel = '' | 'Low' | 'Medium' | 'High';
 
 export interface Setting {
     

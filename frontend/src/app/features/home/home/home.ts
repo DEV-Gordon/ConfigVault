@@ -7,6 +7,7 @@ import { Game } from '../../../core/models/game';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, forkJoin, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { Search } from '../../../core/services/search';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,8 @@ export class Home {
   private destroyRef = inject(DestroyRef);
   // Access to route query params (preset_section / api_target).
   private route = inject(ActivatedRoute);
+  // Shared in-memory search state used by the top search bar.
+  protected search = inject(Search);
 
   protected trendingGames = signal<Game[]>([]);
   protected recentGames = signal<Game[]>([]);
@@ -95,13 +98,13 @@ export class Home {
         // Normalize nullable payload fields to always work with arrays.
         const trending = response.trending ?? [];
         const recent = response.recent ?? [];
+        const searchableGames = this.buildFilteredGamesList(normalizedPresetSection, trending, recent);
 
         this.trendingGames.set(trending);
         this.recentGames.set(recent);
 
-        this.filteredGames.set(
-          this.buildFilteredGamesList(normalizedPresetSection, trending, recent)
-        );
+        this.filteredGames.set(searchableGames);
+        this.search.setGames(searchableGames);
       });
   }
 

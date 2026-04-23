@@ -1,16 +1,33 @@
-<!-- Filtered mode: show one unified list with a dynamic heading. -->
-<ng-container *ngIf="isFilteredView(); else defaultHome">
-	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">{{ filterTitle() }}</h2>
-	<app-recent-list [games]="filteredGames()" [maxItems]="null"></app-recent-list>
+<!-- Search mode takes priority so the header input feels immediate and global. -->
+<ng-container *ngIf="search.hasQuery(); else homeContent">
+	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Search Results</h2>
+
+	<ng-container *ngIf="search.hasResults(); else noSearchResults">
+		<app-recent-list [games]="search.results()" [maxItems]="null"></app-recent-list>
+	</ng-container>
+
+	<ng-template #noSearchResults>
+		<div class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4 text-[13px] text-steam-muted">
+			No results found for this search.
+		</div>
+	</ng-template>
 </ng-container>
 
-<!-- Default mode: keep the original two sections (Trending + Recently Added). -->
-<ng-template #defaultHome>
-	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Trending Configurations</h2>
-	<app-trending-grid [games]="trendingGames()"></app-trending-grid>
+<ng-template #homeContent>
+	<!-- Filtered mode: show one unified list with a dynamic heading. -->
+	<ng-container *ngIf="isFilteredView(); else defaultHome">
+		<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">{{ filterTitle() }}</h2>
+		<app-recent-list [games]="filteredGames()" [maxItems]="null"></app-recent-list>
+	</ng-container>
 
-	<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5 mt-9">Recently Added</h2>
-	<app-recent-list [games]="recentGames()"></app-recent-list>
+	<!-- Default mode: keep the original two sections (Trending + Recently Added). -->
+	<ng-template #defaultHome>
+		<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5">Trending Configurations</h2>
+		<app-trending-grid [games]="trendingGames()"></app-trending-grid>
+
+		<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-5 mt-9">Recently Added</h2>
+		<app-recent-list [games]="recentGames()"></app-recent-list>
+	</ng-template>
 </ng-template>
 
 <!-- Optional error shown when Home feed request fails and fallback is used. -->
