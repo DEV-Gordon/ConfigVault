@@ -1,14 +1,16 @@
 <aside class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4">
 	<ng-container *ngIf="hasAnyData; else noRequirements">
-		<section *ngIf="minimumHtml">
-			<h3 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4] mb-2">Minimum</h3>
-			<div class="requirements-html text-[13px] text-[#d6dee6] leading-6" [innerHTML]="minimumHtml | safeHtml"></div>
-		</section>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<section class="rounded-sm border border-[rgba(255,255,255,0.08)] bg-black/15 p-3" *ngIf="minimumHtml">
+				<h3 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4] mb-2">Minimum</h3>
+				<div class="requirements-html text-[13px] text-[#d6dee6] leading-6" [innerHTML]="minimumHtml | safeHtml"></div>
+			</section>
 
-		<section class="mt-4 pt-4 border-t border-[rgba(255,255,255,0.08)]" *ngIf="recommendedHtml">
-			<h3 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4] mb-2">Recommended</h3>
-			<div class="requirements-html text-[13px] text-[#d6dee6] leading-6" [innerHTML]="recommendedHtml | safeHtml"></div>
-		</section>
+			<section class="rounded-sm border border-[rgba(255,255,255,0.08)] bg-black/15 p-3" *ngIf="recommendedHtml">
+				<h3 class="text-[11px] uppercase tracking-[0.12em] text-[#66c0f4] mb-2">Recommended</h3>
+				<div class="requirements-html text-[13px] text-[#d6dee6] leading-6" [innerHTML]="recommendedHtml | safeHtml"></div>
+			</section>
+		</div>
 	</ng-container>
 
 	<ng-template #noRequirements>

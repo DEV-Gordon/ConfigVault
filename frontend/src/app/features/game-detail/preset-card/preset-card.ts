@@ -12,6 +12,15 @@ import { Preset } from '../../../core/models/preset';
 })
 export class PresetCard {
   @Input({ required: true }) preset!: Preset;
+  protected isExpanded = false;
+
+  toggleExpanded(): void {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  get settingsCount(): number {
+    return this.preset?.settings?.length ?? 0;
+  }
 
   getDeckBadgeClass(value: string | undefined): string {
     const normalized = (value ?? '').toLowerCase();

@@ -33,23 +33,21 @@
 			</div>
 		</article>
 
-		<div class="mt-6 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-6">
-			<section>
-				<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Presets</h2>
+		<section class="mt-6">
+			<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Presets</h2>
 
-				<div *ngIf="!gameData.presets.length" class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4 text-[13px] text-steam-muted">
-					No presets available for this game yet.
-				</div>
+			<div *ngIf="!gameData.presets.length" class="rounded-sm border border-[rgba(42,71,94,0.35)] bg-black/20 p-4 text-[13px] text-steam-muted">
+				No presets available for this game yet.
+			</div>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="gameData.presets.length">
-					<app-preset-card *ngFor="let preset of gameData.presets" [preset]="preset"></app-preset-card>
-				</div>
-			</section>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="gameData.presets.length">
+				<app-preset-card *ngFor="let preset of gameData.presets" [preset]="preset"></app-preset-card>
+			</div>
+		</section>
 
-			<section>
-				<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Requirements</h2>
-				<app-requirements-panel [requirements]="gameData.requirements"></app-requirements-panel>
-			</section>
-		</div>
+		<section class="mt-8">
+			<h2 class="text-lg sm:text-xl font-light text-white uppercase tracking-[0.16em] mb-4">Requirements</h2>
+			<app-requirements-panel [requirements]="gameData.requirements"></app-requirements-panel>
+		</section>
 	</ng-container>
 </section>
